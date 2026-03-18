@@ -80,7 +80,7 @@
 		</div>
 		<hr />
 		<div class="setting">
-			<h3>Display Full Dates</h3>
+			<h3>Date Format</h3>
 			{#snippet enabled()}
 				<CalendarDots />
 			{/snippet}
