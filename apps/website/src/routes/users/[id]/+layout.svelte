@@ -3,6 +3,7 @@
 	import type { LayoutData } from "./$types";
 	import TabLink from "$/components/tab-link.svelte";
 	import {
+		ArrowsLeftRight,
 		CaretDown,
 		CaretRight,
 		FolderSimple,
@@ -31,6 +32,9 @@
 	import { filterRoles } from "$/lib/utils";
 	import { page } from "$app/stores";
 	import Error from "$/components/error.svelte";
+	import { onDestroy, onMount } from "svelte";
+	import AccountMergeDialog from "$/components/dialogs/account-merge-dialog.svelte";
+	import type { DialogMode } from "$/components/dialogs/dialog.svelte";
 
 	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
@@ -67,6 +71,8 @@
 			});
 	});
 
+	let accountMergeDialogState = $state<DialogMode>("hidden");
+
 	let isCosmetics = $state($page.url.pathname.endsWith("/cosmetics"));
 	onMount(() => {
 		const unsubscribe = page.subscribe(($page) => {
@@ -100,6 +106,10 @@
 		<title>{$t("common.error")} - {$t("page_titles.suffix")}</title>
 	{/await}
 </svelte:head>
+
+{#await data.streamed.userRequest.value then user}
+	<AccountMergeDialog bind:mode={accountMergeDialogState} mainUser={user} />
+{/await}
 
 {#snippet desktopMenu()}
 	<nav class="link-list hide-on-mobile">
@@ -235,6 +245,15 @@
 		</TabLink>
 		{#if $user?.permissions.user.manageAny}
 			<hr style="margin-top: auto" />
+			<Button onclick={() => (accountMergeDialogState = "shown")}>
+				{#snippet icon()}
+					<ArrowsLeftRight />
+				{/snippet}
+				<span style="color:var(--text); flex-grow: 1;">Merge account</span>
+				{#snippet iconRight()}
+					<CaretRight />
+				{/snippet}
+			</Button>
 			<Button href="/admin/users/{data.id}">
 				{#snippet icon()}
 					<Wrench />
