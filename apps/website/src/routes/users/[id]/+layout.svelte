@@ -32,7 +32,6 @@
 	import { filterRoles } from "$/lib/utils";
 	import { page } from "$app/stores";
 	import Error from "$/components/error.svelte";
-	import { onDestroy, onMount } from "svelte";
 	import AccountMergeDialog from "$/components/dialogs/account-merge-dialog.svelte";
 	import type { DialogMode } from "$/components/dialogs/dialog.svelte";
 
@@ -163,7 +162,10 @@
 							{#snippet icon()}
 								<Gear />
 							{/snippet}
-							<p title={$t("labels.manage_connections")} style="text-overflow: ellipsis; text-align: left; white-space: nowrap; overflow: hidden;">
+							<p
+								title={$t("labels.manage_connections")}
+								style="text-overflow: ellipsis; text-align: left; white-space: nowrap; overflow: hidden;"
+							>
 								{$t("labels.manage_connections")}
 							</p>
 						</Button>
@@ -249,7 +251,7 @@
 				{#snippet icon()}
 					<ArrowsLeftRight />
 				{/snippet}
-				<span style="color:var(--text); flex-grow: 1;">Merge account</span>
+				<span style="color:var(--text); flex-grow: 1;">Merge Account</span>
 				{#snippet iconRight()}
 					<CaretRight />
 				{/snippet}
@@ -320,6 +322,15 @@
 				{/snippet}
 			</TabLink>
 			{#if $user?.permissions.user.manageAny}
+				<Button onclick={() => (accountMergeDialogState = "shown")}>
+					{#snippet icon()}
+						<ArrowsLeftRight />
+					{/snippet}
+					<span style="color:var(--text); flex-grow: 1;">Merge Account</span>
+					{#snippet iconRight()}
+						<CaretRight />
+					{/snippet}
+				</Button>
 				<Button href="/admin/users/{data.id}">
 					{#snippet icon()}
 						<Wrench />

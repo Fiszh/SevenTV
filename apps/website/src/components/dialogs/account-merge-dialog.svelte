@@ -29,7 +29,8 @@
 	import { t } from "svelte-i18n";
 	import { goto } from "$app/navigation";
 	import TextInput from "../input/text-input.svelte";
-	import { user } from "$/lib/auth";
+
+	import SegmentedControl from "$/components/input/segmented-control.svelte";
 
 	let { mode = $bindable("hidden"), mainUser }: { mode: DialogMode; mainUser: User } = $props();
 
@@ -40,6 +41,9 @@
 
 	let searchQuery = $state("");
 	let idQuery = $state("");
+
+	type QueryType = "search" | "id";
+	let queryType = $state<QueryType>("search");
 
 	let showConfirm = $state<DialogMode>("hidden");
 
@@ -295,7 +299,13 @@
 		<UserProfilePicture user={data} size={4.75 * 16}></UserProfilePicture>
 		<aside id="info">
 			<span class="name" style:color={data.highestRoleColor?.hex}>
-				<UserName user={data} enablePaintDialog /> <Button style="padding: 0.15rem;" title="Open In New Tab" href="/users/{data.id}" target="_blank"><ArrowSquareOut /></Button>
+				<UserName user={data} enablePaintDialog />
+				<Button
+					style="padding: 0.15rem;"
+					title="Open In New Tab"
+					href="/users/{data.id}"
+					target="_blank"><ArrowSquareOut /></Button
+				>
 			</span>
 			<small>ID: {data.id}</small>
 			<div class="roles">
@@ -346,18 +356,41 @@
 			{/if}
 		{/await}
 		<hr />
-		<p>{$t("labels.search_users", { values: { count: 1 } })}</p>
-		<UserSearch onresultclick={onUserResults} resulthref={() => ""} bind:query={searchQuery} />
-		<p>{$t("pages.admin.users.id.subscription.period.id")}</p>
-		<span>
-			<TextInput maxlength={26} stretch bind:value={idQuery} />
-			<Button primary disabled={idQyeryButtonDisabled} onclick={() => onUserResults(null, idQuery)}>
-				{#snippet icon()}
-					<MagnifyingGlass />
-				{/snippet}
-				<span>{$t("labels.proceed")}</span>
-			</Button>
-		</span>
+		<span id="query"
+			><p>{$t("labels.search_users", { values: { count: 1 } })}</p>
+			<SegmentedControl
+				options={[
+					{ value: "search", label: "Search" },
+					{ value: "id", label: "ID" },
+				]}
+				bind:value={queryType}
+			/></span
+		>
+		{#if queryType == "search"}
+			{#snippet icon()}
+				<MagnifyingGlass />
+			{/snippet}
+			<UserSearch
+				{icon}
+				onresultclick={onUserResults}
+				resulthref={() => ""}
+				bind:query={searchQuery}
+			/>
+		{:else}
+			<span>
+				<TextInput maxlength={26} stretch placeholder="7TV ID" bind:value={idQuery} />
+				<Button
+					primary
+					disabled={idQyeryButtonDisabled}
+					onclick={() => onUserResults(null, idQuery)}
+				>
+					{#snippet icon()}
+						<MagnifyingGlass />
+					{/snippet}
+					<span>{$t("labels.proceed")}</span>
+				</Button>
+			</span>
+		{/if}
 
 		<section id="buttons">
 			<Button secondary onclick={() => (mode = "hidden")}>
@@ -385,6 +418,26 @@
 		gap: 1rem;
 
 		overflow-x: hidden;
+
+		:global(.results) {
+			background-color: var(--bg-light);
+
+			border: 1px solid var(--border-active);
+			border-radius: 0.5rem;
+
+			overflow-y: auto;
+
+			flex-direction: column;
+		}
+
+		:global(.results button span) {
+			flex-grow: 0;
+		}
+	}
+
+	span#query {
+		display: flex;
+		justify-content: space-between;
 	}
 
 	h1 {
