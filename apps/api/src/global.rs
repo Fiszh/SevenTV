@@ -50,6 +50,7 @@ use crate::dataloader::user::{UserByPlatformIdLoader, UserByPlatformUsernameLoad
 use crate::dataloader::user_ban::UserBanByUserIdLoader;
 use crate::dataloader::user_editor::{UserEditorByEditorIdLoader, UserEditorByUserIdLoader};
 use crate::dataloader::user_session::UserSessionUpdaterBatcher;
+use crate::http::v3;
 use crate::http::v4;
 use crate::mutex::DistributedMutex;
 use crate::ratelimit::RateLimiter;
@@ -145,9 +146,24 @@ impl scuffle_bootstrap::global::Global for Global {
 
 		tracing::info!("starting api");
 
-		if let Some(path) = config.export_schema_path {
-			tracing::info!("exporting graphql schema to {}", path.display());
-			std::fs::write(path, v4::export_gql_schema()).context("exporting graphql schema")?;
+		if config.export_openapi_path.is_some() || config.export_schema_path.is_some() {
+			if let Some(path) = config.export_openapi_path.as_ref() {
+				tracing::info!("exporting OpenAPI docs to {}", path.display());
+				let docs = v3::docs().to_json().context("serializing OpenAPI docs")?;
+				std::fs::write(path, docs).context("exporting OpenAPI docs")?;
+			}
+
+			if let Some(path) = config.export_openapi_v4_path.as_ref() {
+				tracing::info!("exporting v4 OpenAPI docs to {}", path.display());
+				let docs = v4::export_openapi_json();
+				std::fs::write(path, docs).context("exporting v4 OpenAPI docs")?;
+			}
+
+			if let Some(path) = config.export_schema_path.as_ref() {
+				tracing::info!("exporting graphql schema to {}", path.display());
+				std::fs::write(path, v4::export_gql_schema()).context("exporting graphql schema")?;
+			}
+
 			std::process::exit(0);
 		}
 

@@ -31,15 +31,23 @@ struct CreateBadgeData {
 	metadata: CreateBadgeMetadata,
 }
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, serde::Deserialize, utoipa::ToSchema)]
 struct CreateBadgeMetadata {
 	name: String,
 	description: String,
 }
 
+#[derive(serde::Serialize, utoipa::ToSchema)]
+struct CreateBadgeResponse {
+	badge_id: BadgeId,
+}
+
+
+// v4 OpenAPI annotations omitted: add explicit `utoipa` annotations per-handler as needed.
+
 async fn parse_multipart(mut multipart: Multipart) -> Result<CreateBadgeData, ApiError> {
-	let mut file = None;
-	let mut metadata = None;
+	let mut file: Option<Bytes> = None;
+	let mut metadata: Option<CreateBadgeMetadata> = None;
 
 	while let Some(field) = multipart
 		.next_field()
@@ -82,10 +90,7 @@ async fn parse_multipart(mut multipart: Multipart) -> Result<CreateBadgeData, Ap
 	})
 }
 
-#[derive(serde::Serialize)]
-struct CreateBadgeResponse {
-	badge_id: BadgeId,
-}
+// CreateBadgeResponse already defined with `ToSchema` above.
 
 #[tracing::instrument(skip_all)]
 pub async fn create_badge(

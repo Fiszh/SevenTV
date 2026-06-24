@@ -250,7 +250,7 @@ pub async fn completed(
 
 	let mut params = CreateInvoiceItem::new(customer_id.clone().into());
 	params.invoice = Some(invoice.id.clone());
-	params.price_data = Some(stripe::InvoiceItemPriceData {
+	params.price_data = Some(stripe::generated::billing::invoiceitem::InvoiceItemPriceData {
 		currency: sale.amount.currency,
 		product: product.provider_id.to_string(),
 		unit_amount_decimal: Some(sale.amount.total.replace('.', "")),

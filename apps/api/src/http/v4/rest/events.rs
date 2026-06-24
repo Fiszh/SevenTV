@@ -19,7 +19,7 @@ pub fn routes() -> Router<Arc<Global>> {
 	Router::new().route("/create", post(create_event))
 }
 
-#[derive(Debug, Clone, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Deserialize, utoipa::ToSchema)]
 struct CreateEventRequest {
 	twitch_id: String,
 	special_event_id: SpecialEventId,
@@ -31,10 +31,12 @@ fn default_true() -> bool {
 	true
 }
 
-#[derive(Debug, Clone, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize, utoipa::ToSchema)]
 struct CreateEventResponse {
 	success: bool,
 }
+
+// v4 OpenAPI annotations omitted: add explicit `utoipa` annotations per-handler as needed.
 
 async fn create_event(
 	State(global): State<Arc<Global>>,

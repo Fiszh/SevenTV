@@ -235,6 +235,19 @@ struct LoginFinishResponse {
 	pub token: String,
 }
 
+#[derive(Debug, serde::Deserialize, utoipa::ToSchema)]
+struct LoginFinishPayloadSchema {
+	pub platform: LoginPlatform,
+	pub code: String,
+}
+
+#[derive(Debug, serde::Serialize, utoipa::ToSchema)]
+struct LoginFinishResponseSchema {
+	pub token: String,
+}
+
+// v4 OpenAPI annotations omitted: add explicit `utoipa` annotations per-handler as needed.
+
 #[tracing::instrument(skip_all)]
 async fn login_finish(
 	State(global): State<Arc<Global>>,

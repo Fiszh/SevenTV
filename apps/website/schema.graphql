@@ -43,6 +43,7 @@ type BadgeProgressNextBadge {
 }
 
 type BadgeQuery {
+	badge(id: Id!): Badge
 	badges: [Badge!]!
 }
 
@@ -54,11 +55,11 @@ type Billing {
 type BillingMutation {
 	cancelSubscription(productId: Id!): SubscriptionInfo!
 	getPickems(pickemsId: Id!, subscriptionPriceId: StripeProductId): SubscribeResponse!
-	buyBundle(bundleId: Id!, specialEventId: Id): SubscribeResponse!
 	reactivateSubscription(productId: Id!): SubscriptionInfo!
-	redeemCode(code: String!, captchaToken: String!): RedeemResponse!
+	redeemCode(captchaToken: String!, code: String!): RedeemResponse!
 	subscribe(variantId: StripeProductId!): SubscribeResponse!
 }
+
 
 union CodeEffect = CodeEffectDirectEntitlement | CodeEffectSpecialEvent
 
@@ -270,14 +271,7 @@ type EmotePermission {
 
 type EmoteQuery {
 	emote(id: Id!): Emote
-	search(
-		filters: Filters
-		page: Int
-		perPage: Int
-		query: String
-		sort: Sort!
-		tags: Tags
-	): EmoteSearchResult!
+	search(filters: Filters, page: Int, perPage: Int, query: String, sort: Sort!, tags: Tags): EmoteSearchResult!
 }
 
 type EmoteScores {
@@ -389,26 +383,12 @@ type EmoteSetPermission {
 type EmoteSetQuery {
 	emoteSet(id: Id!): EmoteSet
 	emoteSets(ids: [Id!]!): [EmoteSet!]!
+	global: EmoteSet!
 }
 
 type EntitlementEdgeAnyAny {
 	from: EntitlementNodeAny!
 	to: EntitlementNodeAny!
-}
-
-type EntitlementEdgeAnyBadge {
-	from: EntitlementNodeAny!
-	to: EntitlementNodeBadge!
-}
-
-type EntitlementEdgeAnyPaint {
-	from: EntitlementNodeAny!
-	to: EntitlementNodePaint!
-}
-
-type EntitlementEdgeAnyProduct {
-	from: EntitlementNodeAny!
-	to: EntitlementNodeProduct!
 }
 
 type EntitlementEdgeMutation {
@@ -420,44 +400,7 @@ type EntitlementEdgeOperation {
 	delete: Boolean!
 }
 
-type InventoryEntitlementEdgeAnyBadge {
-	"""
-	Whether this entitlement is directly connected to the user
-	"""
-	accessible: Boolean!
-	from: EntitlementNodeAny!
-	to: EntitlementNodeBadge!
-}
-
-type InventoryEntitlementEdgeAnyPaint {
-	"""
-	Whether this entitlement is directly connected to the user
-	"""
-	accessible: Boolean!
-	from: EntitlementNodeAny!
-	to: EntitlementNodePaint!
-}
-
-type InventoryEntitlementEdgeAnyProduct {
-	"""
-	Whether this entitlement is directly connected to the user
-	"""
-	accessible: Boolean!
-	from: EntitlementNodeAny!
-	to: EntitlementNodeProduct!
-}
-
-union EntitlementNodeAny =
-	| EntitlementNodeUser
-	| EntitlementNodeRole
-	| EntitlementNodeBadge
-	| EntitlementNodePaint
-	| EntitlementNodeEmoteSet
-	| EntitlementNodeProduct
-	| EntitlementNodeSubscriptionBenefit
-	| EntitlementNodeSubscription
-	| EntitlementNodeSpecialEvent
-	| EntitlementNodeGlobalDefaultEntitlementGroup
+union EntitlementNodeAny = EntitlementNodeUser | EntitlementNodeRole | EntitlementNodeBadge | EntitlementNodePaint | EntitlementNodeEmoteSet | EntitlementNodeProduct | EntitlementNodeSubscriptionBenefit | EntitlementNodeSubscription | EntitlementNodeSpecialEvent | EntitlementNodeGlobalDefaultEntitlementGroup
 
 type EntitlementNodeBadge {
 	badge: Badge
@@ -527,15 +470,7 @@ type EntitlementQuery {
 	traverse(from: EntitlementNodeInput!): RawEntitlements!
 }
 
-union EventEmoteData =
-	| EventEmoteDataUpload
-	| EventEmoteDataProcess
-	| EventEmoteDataChangeName
-	| EventEmoteDataMerge
-	| EventEmoteDataChangeOwner
-	| EventEmoteDataChangeTags
-	| EventEmoteDataChangeFlags
-	| EventEmoteDataDelete
+union EventEmoteData = EventEmoteDataUpload | EventEmoteDataProcess | EventEmoteDataChangeName | EventEmoteDataMerge | EventEmoteDataChangeOwner | EventEmoteDataChangeTags | EventEmoteDataChangeFlags | EventEmoteDataDelete
 
 type EventEmoteDataChangeFlags {
 	newFlags: EmoteFlags!
@@ -582,15 +517,7 @@ type EventEmoteDataUpload {
 	noop: Boolean! @deprecated
 }
 
-union EventEmoteSetData =
-	| EventEmoteSetDataCreate
-	| EventEmoteSetDataChangeName
-	| EventEmoteSetDataChangeTags
-	| EventEmoteSetDataChangeCapacity
-	| EventEmoteSetDataAddEmote
-	| EventEmoteSetDataRemoveEmote
-	| EventEmoteSetDataRenameEmote
-	| EventEmoteSetDataDelete
+union EventEmoteSetData = EventEmoteSetDataCreate | EventEmoteSetDataChangeName | EventEmoteSetDataChangeTags | EventEmoteSetDataChangeCapacity | EventEmoteSetDataAddEmote | EventEmoteSetDataRemoveEmote | EventEmoteSetDataRenameEmote | EventEmoteSetDataDelete
 
 type EventEmoteSetDataAddEmote {
 	addedEmote: Emote
@@ -639,14 +566,7 @@ type EventEmoteSetDataRenameEmote {
 	renamedEmoteId: Id!
 }
 
-union EventUserData =
-	| EventUserDataCreate
-	| EventUserDataChangeActivePaint
-	| EventUserDataChangeActiveBadge
-	| EventUserDataChangeActiveEmoteSet
-	| EventUserDataAddConnection
-	| EventUserDataRemoveConnection
-	| EventUserDataDelete
+union EventUserData = EventUserDataCreate | EventUserDataChangeActivePaint | EventUserDataChangeActiveBadge | EventUserDataChangeActiveEmoteSet | EventUserDataAddConnection | EventUserDataRemoveConnection | EventUserDataDelete
 
 type EventUserDataAddConnection {
 	addedPlatform: Platform!
@@ -706,6 +626,8 @@ type FlagPermission {
 	hidden: Boolean!
 }
 
+
+
 scalar Id
 
 type Image {
@@ -723,6 +645,34 @@ enum ImageProcessorEvent {
 	FAIL
 	START
 	SUCCESS
+}
+
+
+type InventoryEntitlementEdgeAnyBadge {
+	"""
+	Whether this entitlement is directly connected to the user
+	"""
+	accessible: Boolean!
+	from: EntitlementNodeAny!
+	to: EntitlementNodeBadge!
+}
+
+type InventoryEntitlementEdgeAnyPaint {
+	"""
+	Whether this entitlement is directly connected to the user
+	"""
+	accessible: Boolean!
+	from: EntitlementNodeAny!
+	to: EntitlementNodePaint!
+}
+
+type InventoryEntitlementEdgeAnyProduct {
+	"""
+	Whether this entitlement is directly connected to the user
+	"""
+	accessible: Boolean!
+	from: EntitlementNodeAny!
+	to: EntitlementNodeProduct!
 }
 
 scalar InvoiceId
@@ -785,11 +735,7 @@ type PaintLayer {
 	ty: PaintLayerType!
 }
 
-union PaintLayerType =
-	| PaintLayerTypeSingleColor
-	| PaintLayerTypeLinearGradient
-	| PaintLayerTypeRadialGradient
-	| PaintLayerTypeImage
+union PaintLayerType = PaintLayerTypeSingleColor | PaintLayerTypeLinearGradient | PaintLayerTypeRadialGradient | PaintLayerTypeImage
 
 type PaintLayerTypeImage {
 	images: [Image!]!
@@ -818,6 +764,7 @@ type PaintPermission {
 }
 
 type PaintQuery {
+	paint(id: Id!): Paint
 	paints: [Paint!]!
 }
 
@@ -902,9 +849,6 @@ type Query {
 	specialEvents: SpecialEventQuery!
 	store: StoreQuery!
 	users: UserQuery!
-	modRequests(page: Int!, limit: Int!, wish: String!, country: [String!]!): ModRequestMessageList!
-	reports(status: ReportStatus, limit: Int, page: Int): [Report!]!
-	emotesByID(list: [Id!]!): [EmotePartial!]!
 }
 
 enum Ranking {
@@ -950,13 +894,8 @@ type RedeemCodeOperation {
 }
 
 type RedeemCodeQuery {
-	redeemCode(id: Id!, captchaToken: String!): RedeemCode
-	redeemCodes(
-		page: Int
-		perPage: Int
-		query: String
-		remainingUses: Boolean
-	): RedeemCodeSearchResult!
+	redeemCode(id: Id!): RedeemCode
+	redeemCodes(page: Int, perPage: Int, query: String, remainingUses: Boolean): RedeemCodeSearchResult!
 }
 
 type RedeemCodeSearchResult {
@@ -1059,6 +998,7 @@ type StoreQuery {
 	monthlyPaints: [Paint!]!
 }
 
+
 scalar StripeProductId
 
 type SubscribeResponse {
@@ -1110,10 +1050,7 @@ type SubscriptionPeriod {
 	updatedAt: DateTime!
 }
 
-union SubscriptionPeriodCreatedBy =
-	| SubscriptionPeriodCreatedByRedeemCode
-	| SubscriptionPeriodCreatedByInvoice
-	| SubscriptionPeriodCreatedBySystem
+union SubscriptionPeriodCreatedBy = SubscriptionPeriodCreatedByRedeemCode | SubscriptionPeriodCreatedByInvoice | SubscriptionPeriodCreatedBySystem
 
 type SubscriptionPeriodCreatedByInvoice {
 	invoiceId: InvoiceId!
@@ -1256,6 +1193,7 @@ input TimePeriodInput {
 type User {
 	billing(productId: Id!): Billing!
 	connections: [UserConnection!]!
+	createdAt: DateTime!
 	editableEmoteSetIds: [Id!]!
 	editorFor: [UserEditor!]!
 	editors: [UserEditor!]!
@@ -1427,138 +1365,11 @@ type UserStyle {
 	pendingProfilePictureId: Id
 }
 
-enum ReportStatus {
-	OPEN
-	ASSIGNED
-	CLOSED
-}
-type Report {
-	id: Id!
-	target_kind: Int!
-	target_id: Id!
-	actor_id: Id!
-	subject: String!
-	body: String!
-	priority: Int!
-	status: ReportStatus!
-	notes: [String!]!
-	actor: V3User!
-	assignees: [V3User!]!
-	created_at: DateTime!
-}
-
-type ImageFile {
-	name: String!
-	format: String!
-	width: Int!
-	height: Int!
-	size: Int!
-}
-type ImageHost {
-	files: [ImageFile!]!
-	url: String!
-}
-type UserPartial {
-	display_name: String!
-	id: Id!
-	username: String!
-	avatar_url: String!
-	type: String!
-	biography: String!
-	created_at: DateTime!
-	style: UserStyle!
-	roles: [Id!]!
-	connections: [UserConnection!]!
-}
-type EmotePartial {
-	id: Id!
-	name: String!
-	tags: [String!]!
-	animated: Boolean!
-	owner_id: Id!
-	host: ImageHost!
-	listed: Boolean!
-	created_at: DateTime!
-	owner: UserPartial!
-	flags: [String!]!
-	state: String!
-}
-type ModRequestMessageList {
-	messages: [ModRequestMessage!]!
-	total: Int!
-}
-type ModRequestMessage {
-	id: Id!
-	kind: MessageKind!
-	author_id: Id
-	read: Boolean!
-	read_at: DateTime
-	target_kind: Int!
-	target_id: Id!
-	wish: String!
-	actor_country_name: String!
-	actor_country_code: String!
-	created_at: DateTime!
-}
-enum MessageKind {
-	EMOTE_COMMENT
-	MOD_REQUEST
-	INBOX
-	NEWS
-}
-
-type V3User {
-	id: Id!
-	username: String!
-	display_name: String!
-	avatar_url: String!
-	biography: String
-	inbox_unread_count: Int
-	created_at: DateTime
-	style: UserStyle
-	editors: [UserEditor!]
-	editor_of: [UserEditor!]
-	cosmetics: [UserCosmetic!]
-	roles: [Id!]
-	emote_sets(entitled: Boolean): [EmoteSet!]
-	owned_emotes: [Emote!]
-	activity(limit: Int): [AuditLog!]
-	connections: [UserConnection!]
-	reports: [Report!]
-}
-type AuditLog {
-	id: Id!
-	actor_id: Id!
-	target_id: Id!
-	target_kind: Int!
-	created_at: DateTime!
-	reason: String!
-	actor: UserPartial!
-}
-type UserCosmetic {
-	id: Id!
-	selected: Boolean!
-}
-
-directive @deprecated(
-	reason: String = "No longer supported"
-) on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION | ENUM_VALUE
+directive @deprecated(reason: String = "No longer supported") on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION | ENUM_VALUE
 directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
 directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
 directive @specifiedBy(url: String!) on SCALAR
-extend schema
-	@link(
-		url: "https://specs.apollo.dev/federation/v2.3"
-		import: [
-			"@key"
-			"@tag"
-			"@shareable"
-			"@inaccessible"
-			"@override"
-			"@external"
-			"@provides"
-			"@requires"
-			"@composeDirective"
-			"@interfaceObject"
-		]
-	)
+extend schema @link(
+	url: "https://specs.apollo.dev/federation/v2.3",
+	import: ["@key", "@tag", "@shareable", "@inaccessible", "@override", "@external", "@provides", "@requires", "@composeDirective", "@interfaceObject"]
+)

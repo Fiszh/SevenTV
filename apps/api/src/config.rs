@@ -156,6 +156,12 @@ pub struct ChatterinoConfig {
 #[derive(Debug, Clone, smart_default::SmartDefault, serde::Deserialize, serde::Serialize)]
 #[serde(default)]
 pub struct Config {
+	/// Export OpenAPI docs
+	pub export_openapi_path: Option<PathBuf>,
+
+	/// Export OpenAPI docs for v4
+	pub export_openapi_v4_path: Option<PathBuf>,
+
 	/// Export GQL schema
 	pub export_schema_path: Option<PathBuf>,
 

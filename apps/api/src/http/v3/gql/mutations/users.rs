@@ -1621,7 +1621,7 @@ impl UserOps {
 
 				let mut params = stripe::CreateInvoiceItem::new(customer_id.clone().into());
 				params.invoice = Some(invoice.id.clone());
-				params.price_data = Some(stripe::InvoiceItemPriceData {
+				params.price_data = Some(stripe::generated::billing::invoiceitem::InvoiceItemPriceData {
 					currency,
 					product: product.provider_id.to_string(),
 					unit_amount: Some((invoice_create.price * 100.0).round() as i64),

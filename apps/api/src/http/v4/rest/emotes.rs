@@ -37,14 +37,13 @@ struct CreateEmoteData {
 	metadata: CreateEmoteMetadata,
 }
 
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, serde::Deserialize, utoipa::ToSchema)]
 struct CreateEmoteMetadata {
 	name: String,
 	tags: Vec<String>,
 	default_zero_width: Option<bool>,
 	private: Option<bool>,
 }
-
 async fn parse_multipart(mut multipart: Multipart) -> Result<CreateEmoteData, ApiError> {
 	let mut file = None;
 	let mut metadata = None;
@@ -90,10 +89,12 @@ async fn parse_multipart(mut multipart: Multipart) -> Result<CreateEmoteData, Ap
 	})
 }
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, utoipa::ToSchema)]
 struct CreateEmoteResponse {
 	emote_id: EmoteId,
 }
+
+// v4 OpenAPI annotations omitted: add explicit `utoipa` annotations per-handler as needed.
 
 #[tracing::instrument(skip_all)]
 pub async fn create_emote(

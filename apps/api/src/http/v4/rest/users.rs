@@ -32,6 +32,13 @@ struct UploadUserProfilePictureResponse {
 	pending_profile_picture: UserProfilePictureId,
 }
 
+#[derive(serde::Serialize, utoipa::ToSchema)]
+struct UploadUserProfilePictureResponseSchema {
+	pending_profile_picture: UserProfilePictureId,
+}
+
+// v4 OpenAPI annotations omitted: add explicit `utoipa` annotations per-handler as needed.
+
 #[tracing::instrument(skip_all, fields(id = ?id))]
 async fn upload_user_profile_picture(
 	State(global): State<Arc<Global>>,
