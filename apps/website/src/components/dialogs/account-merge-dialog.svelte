@@ -294,44 +294,54 @@
 
 <WarningDanger bind:mode={showConfirm} confirm={onConfirm} />
 
-{#snippet userDisplay(data: User)}
+{#snippet userDisplay(data: User | undefined)}
 	<section id="user">
 		<UserProfilePicture user={data} size={4.75 * 16}></UserProfilePicture>
 		<aside id="info">
-			<span class="name" style:color={data.highestRoleColor?.hex}>
-				<UserName user={data} enablePaintDialog />
-				<Button
-					style="padding: 0.15rem;"
-					title="Open In New Tab"
-					href="/users/{data.id}"
-					target="_blank"><ArrowSquareOut /></Button
-				>
-			</span>
-			<small>ID: {data.id}</small>
-			<div class="roles">
-				{#each filterRoles(data.roles) as role}
-					<Role roleData={role} />
-				{/each}
-			</div>
+			{#if data}
+				<span class="name" style:color={data.highestRoleColor?.hex}>
+					<UserName user={data} enablePaintDialog />
+					<Button
+						style="padding: 0.15rem;"
+						title="Open In New Tab"
+						href="/users/{data.id}"
+						target="_blank"><ArrowSquareOut /></Button
+					>
+				</span>
+				<small>ID: {data.id}</small>
+				<div class="roles">
+					{#each filterRoles(data.roles) as role}
+						<Role roleData={role} />
+					{/each}
+				</div>
 
-			<section id="stats">
-				<span
-					><SealCheck size="0.75rem" />
-					Badges: {data.inventory.badges.length.toLocaleString()}</span
-				>
-				<span
-					><PaintBrush size="0.75rem" />
-					Paints: {data.inventory.paints.length.toLocaleString()}</span
-				>
-				<span
-					><Smiley size="0.75rem" />
-					{$t("dialogs.editor.emotes")}: {data.ownedEmotes.length.toLocaleString()}</span
-				>
-				<span
-					><Folder size="0.75rem" />
-					{$t("common.emote_sets", { values: { count: 2 } })}: {data.ownedEmoteSets.length.toLocaleString()}</span
-				>
-			</section>
+				<section id="stats">
+					<span
+						><SealCheck size="0.75rem" />
+						Badges: {data.inventory.badges.length.toLocaleString()}</span
+					>
+					<span
+						><PaintBrush size="0.75rem" />
+						Paints: {data.inventory.paints.length.toLocaleString()}</span
+					>
+					<span
+						><Smiley size="0.75rem" />
+						{$t("dialogs.editor.emotes")}: {data.ownedEmotes.length.toLocaleString()}</span
+					>
+					<span
+						><Folder size="0.75rem" />
+						{$t("common.emote_sets", { values: { count: 2 } })}: {data.ownedEmoteSets.length.toLocaleString()}</span
+					>
+				</section>
+			{:else}
+				<span class="name placeholder loading-animation"></span>
+				<small class="id placeholder loading-animation"></small>
+				<div class="roles">
+					{#each Array(3)}
+						<div class="role placeholder loading-animation"></div>
+					{/each}
+				</div>
+			{/if}
 		</aside>
 	</section>
 {/snippet}
@@ -352,7 +362,7 @@
 			{#if data}
 				{@render userDisplay(data)}
 			{:else}
-				<div class="name placeholder loading-animation">{$t("dialogs.editor.user")}</div>
+				{@render userDisplay(undefined)}
 			{/if}
 		{/await}
 		<hr />
@@ -432,6 +442,25 @@
 
 		:global(.results button span) {
 			flex-grow: 0;
+		}
+
+		.placeholder {
+			height: 1rem;
+			background-color: var(--preview);
+			padding-inline: 0.25rem;
+			border-radius: 0.25rem;
+
+			&.name {
+				width: 25%;
+			}
+
+			&.id {
+				width: 100%;
+			}
+
+			&.role {
+				width: 5rem;
+			}
 		}
 	}
 
