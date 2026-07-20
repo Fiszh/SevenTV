@@ -25,12 +25,12 @@
 
 <Dialog bind:mode>
 	<div class="layout">
-		<h1>{$t("dialogs.delete_account.warning")}</h1>
+		<h1>{$t("labels.warning")}</h1>
 		<hr />
 		<section id="warning">
 			<Warning size="5rem" color="var(--danger)" />
-			Are you sure you want to proceed?
-			<small>You cannot undo this action.</small>
+			{$t("dialogs.warning_ui.sure")}
+			<small>{$t("dialogs.warning_ui.cannot_undo")}</small>
 		</section>
 		<div class="buttons">
 			<Button style="color: var(--danger)" onclick={confirmed}>{$t("labels.proceed")}</Button>

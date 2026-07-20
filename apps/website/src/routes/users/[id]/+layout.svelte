@@ -251,7 +251,7 @@
 				{#snippet icon()}
 					<ArrowsLeftRight />
 				{/snippet}
-				<span style="color:var(--text); flex-grow: 1;">Merge Account</span>
+				<span style="color:var(--text); flex-grow: 1;">{$t("dialogs.merge_ui.title")}</span>
 				{#snippet iconRight()}
 					<CaretRight />
 				{/snippet}
@@ -326,7 +326,7 @@
 					{#snippet icon()}
 						<ArrowsLeftRight />
 					{/snippet}
-					<span style="color:var(--text); flex-grow: 1;">Merge Account</span>
+					<span style="color:var(--text); flex-grow: 1;">{$t("dialogs.merge_ui.title")}</span>
 					{#snippet iconRight()}
 						<CaretRight />
 					{/snippet}

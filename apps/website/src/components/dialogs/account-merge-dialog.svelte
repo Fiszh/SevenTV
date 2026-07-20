@@ -305,8 +305,10 @@
 						style="padding: 0.15rem;"
 						title="Open In New Tab"
 						href="/users/{data.id}"
-						target="_blank"><ArrowSquareOut /></Button
+						target="_blank"
 					>
+						<ArrowSquareOut />
+					</Button>
 				</span>
 				<small>ID: {data.id}</small>
 				<div class="roles">
@@ -316,22 +318,22 @@
 				</div>
 
 				<section id="stats">
-					<span
-						><SealCheck size="0.75rem" />
-						Badges: {data.inventory.badges.length.toLocaleString()}</span
-					>
-					<span
-						><PaintBrush size="0.75rem" />
-						Paints: {data.inventory.paints.length.toLocaleString()}</span
-					>
-					<span
-						><Smiley size="0.75rem" />
-						{$t("dialogs.editor.emotes")}: {data.ownedEmotes.length.toLocaleString()}</span
-					>
-					<span
-						><Folder size="0.75rem" />
-						{$t("common.emote_sets", { values: { count: 2 } })}: {data.ownedEmoteSets.length.toLocaleString()}</span
-					>
+					<span>
+						<SealCheck size="0.75rem" />
+						{$t("common.badges", { values: { count: 2 } })}: {data.inventory.badges.length.toLocaleString()}
+					</span>
+					<span>
+						<PaintBrush size="0.75rem" />
+						{$t("common.paints", { values: { count: 2 } })}: {data.inventory.paints.length.toLocaleString()}
+					</span>
+					<span>
+						<Smiley size="0.75rem" />
+						{$t("common.emotes", { values: { count: 2 } })}: {data.ownedEmotes.length.toLocaleString()}
+					</span>
+					<span>
+						<Folder size="0.75rem" />
+						{$t("common.emote_sets", { values: { count: 2 } })}: {data.ownedEmoteSets.length.toLocaleString()}
+					</span>
 				</section>
 			{:else}
 				<span class="name placeholder loading-animation"></span>
@@ -348,16 +350,18 @@
 
 <Dialog width={35} bind:mode>
 	<div class="layout">
-		<h1>Account Merge</h1>
+		<h1>{$t("dialogs.merge_ui.title")}</h1>
 		<hr />
 		{#await users.main then data}
 			{#if data}
 				{@render userDisplay(data)}
 			{:else}
-				<div class="name placeholder loading-animation">{$t("dialogs.editor.user")}</div>
+				<div class="name placeholder loading-animation">
+					{$t("common.users", { values: { count: 1 } })}
+				</div>
 			{/if}
 		{/await}
-		<span class="middle"><ArrowDown /> Merged Into <ArrowDown /></span>
+		<span class="middle"><ArrowDown /> {$t("dialogs.merge_ui.merged_into")} <ArrowDown /></span>
 		{#await users.second then data}
 			{#if data}
 				{@render userDisplay(data)}
@@ -366,16 +370,16 @@
 			{/if}
 		{/await}
 		<hr />
-		<span id="query"
-			><p>{$t("labels.search_users", { values: { count: 1 } })}</p>
+		<span id="query">
+			<p>{$t("common.users", { values: { count: 1 } })}</p>
 			<SegmentedControl
 				options={[
-					{ value: "search", label: "Search" },
-					{ value: "id", label: "ID" },
+					{ value: "search", label: $t("labels.search") },
+					{ value: "id", label: $t("common.ids", { values: { count: 1, platform: "" } }) },
 				]}
 				bind:value={queryType}
-			/></span
-		>
+			/>
+		</span>
 		{#if queryType == "search"}
 			{#snippet icon()}
 				<MagnifyingGlass />
@@ -388,7 +392,12 @@
 			/>
 		{:else}
 			<span>
-				<TextInput maxlength={26} stretch placeholder="7TV ID" bind:value={idQuery} />
+				<TextInput
+					maxlength={26}
+					stretch
+					placeholder={$t("common.ids", { values: { count: 1, platform: "7TV" } })}
+					bind:value={idQuery}
+				/>
 				<Button
 					primary
 					disabled={idQyeryButtonDisabled}
