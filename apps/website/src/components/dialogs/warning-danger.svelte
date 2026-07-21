@@ -29,8 +29,8 @@
 		<hr />
 		<section id="warning">
 			<Warning size="5rem" color="var(--danger)" />
-			{$t("dialogs.warning_ui.sure")}
-			<small>{$t("dialogs.warning_ui.cannot_undo")}</small>
+			{$t("dialogs.warning.sure")}
+			<small>{$t("dialogs.warning.cannot_undo")}</small>
 		</section>
 		<div class="buttons">
 			<Button style="color: var(--danger)" onclick={confirmed}>{$t("labels.proceed")}</Button>

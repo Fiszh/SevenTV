@@ -350,7 +350,7 @@
 
 <Dialog width={35} bind:mode>
 	<div class="layout">
-		<h1>{$t("dialogs.merge_ui.title")}</h1>
+		<h1>{$t("dialogs.merge.title")}</h1>
 		<hr />
 		{#await users.main then data}
 			{#if data}
@@ -361,7 +361,7 @@
 				</div>
 			{/if}
 		{/await}
-		<span class="middle"><ArrowDown /> {$t("dialogs.merge_ui.merged_into")} <ArrowDown /></span>
+		<span class="middle"><ArrowDown /> {$t("dialogs.merge.merged_into")} <ArrowDown /></span>
 		{#await users.second then data}
 			{#if data}
 				{@render userDisplay(data)}
